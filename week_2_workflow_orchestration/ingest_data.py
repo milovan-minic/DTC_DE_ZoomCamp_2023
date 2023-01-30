@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from prefect import flow, task
 
 
+@task()
 def ingest_data(user, password, host, port, db, table_name, url):
     
     # the backup files are gzipped, and it's important to keep the correct extension
