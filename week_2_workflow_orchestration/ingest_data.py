@@ -39,7 +39,10 @@ def transform_data(df):
     return df
 
 @task(log_prints = True, retries = 3)
-def ingest_data(user, password, host, port, db, table_name, url):
+def ingest_data(user, password, host, port, db, table_name, data):
+
+    postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{db}'
+    engine = create_engine(postgres_url)
 
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
@@ -58,7 +61,7 @@ def main_flow():
 
     raw_data = extract_data(url = csv_url)
     data = transform_data(raw_data)
-    ingest_data(user, password, host, port, db, table_name, csv_url)
+    ingest_data(user, password, host, port, db, table_name, data)
 
 if __name__ == '__main__':
     main_flow()
