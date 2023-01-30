@@ -1,3 +1,5 @@
 ace-element-375718-8bdf9c4218d8.json
-/data
+*/data
 *.gz
+
+*/venv
