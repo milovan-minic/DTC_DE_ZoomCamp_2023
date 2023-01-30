@@ -4,8 +4,10 @@ from time import time
 import pandas as pd
 from sqlalchemy import create_engine
 from prefect import flow, task
+from prefect.tasks import task_input_hash
+from datetime import timedelta
 
-@task(log_prints = True)
+@task(log_prints = True, retries = 3, cache_key_fn = task_input_hash, cache_expiration = timedelta(days = 1))
 def extract_data(url):
     # the backup files are gzipped, and it's important to keep the correct extension
     # for pandas to be able to open the file
