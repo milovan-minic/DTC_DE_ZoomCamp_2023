@@ -57,6 +57,7 @@ def main_flow():
     csv_url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 
     raw_data = extract_data(url = csv_url)
+    data = transform_data(raw_data)
     ingest_data(user, password, host, port, db, table_name, csv_url)
 
 if __name__ == '__main__':
