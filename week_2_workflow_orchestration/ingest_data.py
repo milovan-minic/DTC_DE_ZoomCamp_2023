@@ -27,6 +27,16 @@ def extract_data(url):
 
     return df
 
+@task(log_prints = True)
+def transform_data(df):
+    
+    print(f"Pre: Missing passenger count {df['passenger_count'].isin([0]).sum()}")
+    
+    df = df[df['passenger_count'] != 0]
+    
+    print(f"Post: Missing passenger count {df['passenger_count'].isin([0]).sum()}")
+    
+    return df
 
 @task(log_prints = True, retries = 3)
 def ingest_data(user, password, host, port, db, table_name, url):
