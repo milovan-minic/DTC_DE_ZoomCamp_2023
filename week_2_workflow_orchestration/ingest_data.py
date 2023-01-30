@@ -3,6 +3,7 @@ import argparse
 from time import time
 import pandas as pd
 from sqlalchemy import create_engine
+from prefect import flow, task
 
 
 def ingest_data(user, password, host, port, db, table_name, url):
@@ -50,7 +51,8 @@ def ingest_data(user, password, host, port, db, table_name, url):
             print("Finished ingesting data into the postgres database")
             break
 
-if __name__ == '__main__':
+@flow(name = 'Ingest Flow')
+def main():
     user = "root"
     password = "root"
     host = "localhost"
@@ -60,3 +62,6 @@ if __name__ == '__main__':
     csv_url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 
     ingest_data(user, password, host, port, db, table_name, csv_url)
+
+if __name__ == '__main__':
+    main()
