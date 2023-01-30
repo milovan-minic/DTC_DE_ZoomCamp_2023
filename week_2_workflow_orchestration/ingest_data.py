@@ -39,7 +39,7 @@ def transform_data(df):
     return df
 
 @task(log_prints = True, retries = 3)
-def ingest_data(user, password, host, port, db, table_name, data):
+def ingest_data(user, password, host, port, db, table_name, df):
 
     postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{db}'
     engine = create_engine(postgres_url)
