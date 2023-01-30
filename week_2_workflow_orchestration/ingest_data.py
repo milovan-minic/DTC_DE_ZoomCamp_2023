@@ -5,10 +5,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from prefect import flow, task
 
-
-@task(log_prints = True, retries = 3)
-def ingest_data(user, password, host, port, db, table_name, url):
-    
+@task(log_prints = True)
+def extract_data(url):
     # the backup files are gzipped, and it's important to keep the correct extension
     # for pandas to be able to open the file
     if url.endswith('.csv.gz'):
@@ -17,8 +15,6 @@ def ingest_data(user, password, host, port, db, table_name, url):
         csv_name = 'output.csv'
 
     os.system(f"wget {url} -O {csv_name}")
-    postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{db}'
-    engine = create_engine(postgres_url)
 
     df_iter = pd.read_csv(csv_name, iterator=True)
 
@@ -26,6 +22,12 @@ def ingest_data(user, password, host, port, db, table_name, url):
 
     df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
     df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+
+    return df
+
+
+@task(log_prints = True, retries = 3)
+def ingest_data(user, password, host, port, db, table_name, url):
 
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
@@ -42,6 +44,7 @@ def main_flow():
     table_name = "yellow_taxi_trips"
     csv_url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 
+    raw_data = extract_data(url = csv_url)
     ingest_data(user, password, host, port, db, table_name, csv_url)
 
 if __name__ == '__main__':
