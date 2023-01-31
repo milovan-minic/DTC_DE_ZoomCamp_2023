@@ -39,6 +39,20 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
 
     return path
 
+@task()
+def write_to_gcs(path: Path) -> None:
+    '''Uploading local parquet file to GCS'''
+
+    gcp_cloud_storage_bucket_block = GcsBucket.load('dtc-de-gcs')
+
+    gcp_cloud_storage_bucket_block.upload_from_path(
+        from_path = f'{path}',
+        to_path = path
+    )
+
+    return
+
+
 @flow()
 def etl_web_to_gcs() -> None:
     '''This is the main ETL function'''
@@ -51,6 +65,7 @@ def etl_web_to_gcs() -> None:
     df = fetch(dataset_url)
     df_clean = clean(df)
     path = write_local(df_clean, color, dataset_file)
+    write_to_gcs(path)
 
 if __name__ == '__main__':
     etl_web_to_gcs()
