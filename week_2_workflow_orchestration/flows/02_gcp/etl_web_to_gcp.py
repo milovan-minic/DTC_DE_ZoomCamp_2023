@@ -3,10 +3,14 @@ import pandas as pd
 from pathlib import Path
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
+from random import randint
 
-@flow()
+@flow(retries = 3)
 def fetch(dataset_url: str) -> pd.DataFrame:
     '''Read data from web into Pandas DataFrame'''
+
+    if randint(0, 1) > 0:
+        raise Exception
 
     df = pd.read_csv(dataset_url)
 
