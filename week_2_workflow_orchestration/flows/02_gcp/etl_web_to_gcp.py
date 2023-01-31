@@ -29,26 +29,15 @@ def clean(df = pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+@task(log_prints = True)
+def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
+    '''Write DataFrame out locally as a parquet file'''
 
-# @task(log_prints=True)
-# def clean(df: pd.DataFrame) -> pd.DataFrame:
-#     """Fix dtype issues"""
-#     df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
-#     df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
-#     print(df.head(2))
-#     print(f"columns: {df.dtypes}")
-#     print(f"rows: {len(df)}")
-#     return df
+    path = Path(f'../../data/{color}/{dataset_file}.parquet')
+    print(path)
+    df.to_parquet(path, compression='gzip')
 
-
-
-
-
-
-
-
-
-
+    return path
 
 @flow()
 def etl_web_to_gcs() -> None:
@@ -61,6 +50,7 @@ def etl_web_to_gcs() -> None:
 
     df = fetch(dataset_url)
     df_clean = clean(df)
+    path = write_local(df_clean, color, dataset_file)
 
 if __name__ == '__main__':
     etl_web_to_gcs()
