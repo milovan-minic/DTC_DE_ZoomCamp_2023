@@ -7,7 +7,7 @@ version: 5317ecf0bfb392015a79ed64c80694b2
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 tags: []
-parameters: {}
+parameters: {"color": "yellow", "months": [1, 2, 3], "year": 2021}
 schedule: null
 infra_overrides: {}
 infrastructure:
