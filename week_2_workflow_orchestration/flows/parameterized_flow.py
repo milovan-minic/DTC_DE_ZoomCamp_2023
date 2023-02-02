@@ -30,7 +30,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 @task()
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     '''Write DataFrame out locally as parquet file'''
-    path = Path(f'data/{color}/{dataset_file}.parquet')
+    path = Path(f'../data/{color}/{dataset_file}.parquet')
     df.to_parquet(path, compression = 'gzip')
     return path
 
@@ -38,7 +38,7 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
 @task()
 def write_gcs(path: Path) -> None:
     '''Upload local parquet file to GCS'''
-    gcs_block = GcsBucket.load('zoom-gcs')
+    gcs_block = GcsBucket.load('dtc-de-gcs')
     gcs_block.upload_from_path(from_path = path, to_path = path)
     return
 
